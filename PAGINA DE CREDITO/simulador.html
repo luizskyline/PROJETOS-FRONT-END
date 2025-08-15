@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador</title>
+  <style>
+    /* Reset e estilos básicos */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f7f7f7, #ffffff);
+    }
+    /* Header e Footer fixos e coloridos */
+    header, footer {
+      position: fixed;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      background-color: #000000;
+      z-index: 1000;
+    }
+    header {
+      top: 0;
+    }
+    footer {
+      bottom: 0;
+    }
+    /* Container principal com margem para não sobrepor header e footer */
+    .container {
+      margin: 70px auto 70px;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+    /* Estilos do simulador */
+    #loan-calculator {
+      max-width: 600px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 30px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #f7f7f7, #ffffff);
+      position: relative;
+      z-index: 1;
+    }
+    #loan-calculator h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    #loan-calculator h2 {
+      text-align: center;
+      color: #ffd518;
+      margin-top: 0;
+    }
+    #loan-calculator label {
+      font-weight: bold;
+      color: #34495e;
+    }
+    #loan-calculator input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #bdc3c7;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+    #loan-calculator button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: #3fdb34;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    #loan-summary {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    #loan-calculator table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    #loan-calculator th, #loan-calculator td {
+      border: 1px solid #e0e0e0;
+      padding: 10px;
+      text-align: center;
+    }
+    #loan-calculator th {
+      background-color: #f8f8f8;
+    }
+    #mode-selection {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #mode-selection input[type="radio"] {
+      margin: 0 5px;
+    }
+    /* Botão do WhatsApp - reposicionado para ficar sempre visível */
+    .whatsapp-button {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background-color: #25D366;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-decoration: none;
+      animation: float 1.5s infinite ease-in-out;
+      z-index: 9999;
+    }
+    .whatsapp-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
+    /* Responsividade: ajustes para telas menores */
+    @media (max-width: 480px) {
+      .whatsapp-button {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        bottom: 70px;
+        right: 10px;
+      }
+      #loan-calculator {
+        padding: 20px;
+        margin: 20px;
+      }
+      #loan-summary {
+        flex-direction: column;
+        text-align: center;
+      }
+      #loan-calculator th, #loan-calculator td {
+        padding: 8px;
+        font-size: 0.9em;
+      }
+      #loan-calculator h1 {
+        font-size: 1.5em;
+      }
+      #loan-calculator h2 {
+        font-size: 1.2em;
+      }
+    }
+  </style>
+  <!-- Importação do FontAwesome para carregar o ícone do WhatsApp -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header></header>
+  
+  <div class="container">
+    <div id="loan-calculator">
+      <h1>SIMULAÇÃO</h1>
+      <h2></h2>
+  
+      <!-- Seletor de modo -->
+      <div id="mode-selection">
+        <input type="radio" id="mode-receber" name="mode" value="receber" checked>
+        <label for="mode-receber">Valor a Receber</label>
+        <input type="radio" id="mode-pagar" name="mode" value="pagar">
+        <label for="mode-pagar">Valor a Pagar</label>
+      </div>
+  
+      <!-- Inputs conforme o modo selecionado -->
+      <div id="input-container">
+        <!-- Modo: Valor a Receber -->
+        <div id="receber-input">
+          <label for="loan-amount">Valor a Receber (R$):</label>
+          <input type="number" id="loan-amount" placeholder="Digite o valor que deseja receber">
+        </div>
+        <!-- Modo: Valor a Pagar -->
+        <div id="pagar-input" style="display: none;">
+          <label for="payment-amount">Valor a Pagar (R$):</label>
+          <input type="number" id="payment-amount" placeholder="Digite o valor que pode pagar">
+        </div>
+      </div>
+  
+      <button id="calculate-btn">Calcular</button>
+  
+      <div id="loan-summary">
+        <div id="loan-receive"></div>
+        <div id="loan-total"></div>
+      </div>
+  
+      <div id="result"></div>
+    </div>
+  </div>
+  
+  <footer>
+    <p style="text-align: center; color: white; font-size: 14px; margin: 15px 0;">
+        Desenvolvido por um astronauta.
+    </p>
+</footer>
+  
+  <!-- Botão do WhatsApp fixo -->
+  <a href="https://wa.me/" target="_blank" class="whatsapp-button">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+  
+  <script>
+    const taxas = [
+      0, 10.00, 13.00, 14.00, 15.00, 15.50, 16.00, 17.00, 18.00, 19.00,
+      19.50, 20.50, 21.00, 22.00, 23.00, 23.50, 24.50, 25.00, 26.00
+    ];
+  
+    // Alterna entre os modos de cálculo
+    const modeReceber = document.getElementById('mode-receber');
+    const modePagar = document.getElementById('mode-pagar');
+    const receberInputDiv = document.getElementById('receber-input');
+    const pagarInputDiv = document.getElementById('pagar-input');
+  
+    modeReceber.addEventListener('change', toggleMode);
+    modePagar.addEventListener('change', toggleMode);
+  
+    function toggleMode() {
+      if (modeReceber.checked) {
+        receberInputDiv.style.display = 'block';
+        pagarInputDiv.style.display = 'none';
+      } else if (modePagar.checked) {
+        receberInputDiv.style.display = 'none';
+        pagarInputDiv.style.display = 'block';
+      }
+      // Limpa resultados anteriores
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('loan-receive').innerHTML = '';
+      document.getElementById('loan-total').innerHTML = '';
+    }
+  
+    document.getElementById('calculate-btn').addEventListener('click', function() {
+      const resultDiv = document.getElementById('result');
+      const loanReceiveDiv = document.getElementById('loan-receive');
+      const loanTotalDiv = document.getElementById('loan-total');
+  
+      let table = '<table>';
+      table += '<tr><th>Parcelas</th><th>Valor das Parcelas</th><th>';
+      
+      // Verifica o modo escolhido e realiza os cálculos correspondentes
+      if (modeReceber.checked) {
+        table += 'Valor a Pagar</th></tr>';
+        let loanAmount = parseFloat(document.getElementById('loan-amount').value);
+        
+        if (isNaN(loanAmount) || loanAmount <= 0) {
+          resultDiv.innerHTML = '<p style="color:red; text-align:center;">Por favor, insira um valor válido para o valor a receber.</p>';
+          loanReceiveDiv.innerHTML = '';
+          loanTotalDiv.innerHTML = '';
+          return;
+        }
+        
+        // Cálculo utilizando a menor taxa (taxas[1])
+        let menorTaxa = taxas[1]; 
+        let valorTotalMinimo = loanAmount * (1 + (menorTaxa / 100));
+  
+        loanReceiveDiv.innerHTML = `<strong>Valor a Receber:</strong> R$ ${loanAmount.toFixed(2)}`;
+        loanTotalDiv.innerHTML = `<strong>Valor a Pagar:</strong> R$ ${valorTotalMinimo.toFixed(2)}`;
+  
+        // Gera a tabela com os valores para cada quantidade de parcelas
+        for (let i = 1; i <= 18; i++) {
+          let taxaAtual = taxas[i];
+          let valorTotal = loanAmount * (1 + (taxaAtual / 100));
+          let valorParcela = valorTotal / i;
+  
+          table += `<tr><td>${i}x</td><td>R$ ${valorParcela.toFixed(2)}</td><td>R$ ${valorTotal.toFixed(2)}</td></tr>`;
+        }
+      } else if (modePagar.checked) {
+        table += 'Valor a Receber</th></tr>';
+        let paymentAmount = parseFloat(document.getElementById('payment-amount').value);
+        
+        if (isNaN(paymentAmount) || paymentAmount <= 0) {
+          resultDiv.innerHTML = '<p style="color:red; text-align:center;">Por favor, insira um valor válido para o valor a pagar.</p>';
+          loanReceiveDiv.innerHTML = '';
+          loanTotalDiv.innerHTML = '';
+          return;
+        }
+        
+        // Cálculo utilizando a menor taxa para exibir o valor máximo a receber
+        let menorTaxa = taxas[1];
+        let valorReceberMax = paymentAmount / (1 + (menorTaxa / 100));
+  
+        loanTotalDiv.innerHTML = `<strong>Valor a Pagar:</strong> R$ ${paymentAmount.toFixed(2)}`;
+        loanReceiveDiv.innerHTML = `<strong>Valor a Receber:</strong> R$ ${valorReceberMax.toFixed(2)}`;
+  
+        // Gera a tabela com os valores para cada quantidade de parcelas
+        for (let i = 1; i <= 18; i++) {
+          let taxaAtual = taxas[i];
+          let valorReceber = paymentAmount / (1 + (taxaAtual / 100));
+          let valorParcela = paymentAmount / i;
+  
+          table += `<tr><td>${i}x</td><td>R$ ${valorParcela.toFixed(2)}</td><td>R$ ${valorReceber.toFixed(2)}</td></tr>`;
+        }
+      }
+      
+      table += '</table>';
+      resultDiv.innerHTML = table;
+    });
+  </script>
+</body>
+</html>
